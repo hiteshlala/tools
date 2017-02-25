@@ -1,11 +1,15 @@
 {
   "name": "tools",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Just a bunch of useful code snippets",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hitesh Lala <hiteshlala@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "jsonwebtoken": "^7.3.0"
+  }
 }
