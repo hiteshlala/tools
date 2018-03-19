@@ -1,0 +1,16 @@
+{
+  "name": "load-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "loadtest": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "ldtest": " node node_modules/loadtest/bin/loadtest.js -n 100000000000 -c 50 --rps 200 http://localhost:9000",
+    "start": " node index.js"
+  },
+  "author": "Hitesh Lala",
+  "license": "ISC"
+}
