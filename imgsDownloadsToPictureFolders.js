@@ -3,7 +3,8 @@
 const fs = require('fs');
 
 const downloadFolder = '/Users/hiteshlala/Downloads';
-const outpuFolder = '/Users/hiteshlala/Desktop/Pictures';
+// const outpuFolder = '/Users/hiteshlala/Desktop/Pictures';
+const outpuFolder = '/Users/hiteshlala/Desktop/backgrounds';
 const files = fs.readdirSync(downloadFolder);
 const months = {
   0: 'Jan',

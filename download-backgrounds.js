@@ -3,8 +3,8 @@
 const fs = require('fs');
 const https = require( 'https' );
 
-// const dest = '/Users/hiteshlala/Desktop/junk/'; // macos
-const dest = '/Users/Hitesh/Desktop/junk/'; // windows machine
+const dest = '/Users/hiteshlala/Desktop/junk/'; // macos
+// const dest = '/Users/Hitesh/Desktop/junk/'; // windows machine
 
 function download(url, dest) {
   return new Promise((resolve, reject) => {

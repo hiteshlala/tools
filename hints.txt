@@ -1,0 +1,7 @@
+Setting up a gulp file project
+  look at https://github.com/hiteshlala/symsketch as an example
+
+Setting up a react file project 
+  look at https://github.com/hiteshlala/minesweeper
+  look at https://github.com/hiteshlala/fractals
+
