@@ -2,10 +2,10 @@
   "name": "tools",
   "version": "0.0.1",
   "description": "Just a bunch of useful code snippets",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "Hitesh Lala <hiteshlala@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "figlet": "^1.5.2"
   }
 }

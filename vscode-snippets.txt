@@ -1,0 +1,24 @@
+{
+	"check-dot" : {
+		"prefix": "check-dot",
+		"body": [ "• "],
+		"description": "add check mark (•)"
+	}
+}
+
+{
+	"check-x" : {
+		"prefix": "check-x",
+		"body": [ "✗ "],
+		"description": "add check mark (✘, ✗)"
+	}
+}
+
+{
+	"check-check" : {
+		"prefix": "check-check",
+		"body": [ "✔ "],
+		"description": "add check mark (✔ ✓)"
+	}
+}
+

@@ -2,3 +2,5 @@ node_modules
 .vagrant
 .DS_Store
 package-lock.json
+
+junk/*
