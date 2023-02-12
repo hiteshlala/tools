@@ -22,3 +22,24 @@
 	}
 }
 
+{
+	"date": {
+		"prefix": "date",
+		"body": [
+			"$CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE"
+		],
+		"description": "Enter todays date"
+	}
+}
+
+{
+	"separator-line": {
+		"prefix": "separatorline",
+		"body": [
+      "",
+			"===============================================================================================================",
+			""
+		],
+		"description": "Print a separator line"
+	}
+}
