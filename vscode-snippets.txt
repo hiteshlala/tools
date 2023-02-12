@@ -43,3 +43,13 @@
 		"description": "Print a separator line"
 	}
 }
+
+
+setting up ligature fonts:
+	brew tap homebrew/cask-fonts
+	brew install --cask font-fira-code
+	add in settings.json
+	{
+			"editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+			"editor.fontLigatures": true,
+	}
