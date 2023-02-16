@@ -18,9 +18,9 @@ function download(url, dest) {
   });
 }  
 
-function getImage(fname, destination) {
+function getImage(fname, destination, srcDest) {
   const writeTo = `${destination}${fname}`;
-  const path = `https://hiteshlala.com/backgrounds/images/${encodeURIComponent(fname)}`;
+  const path = `https://hiteshlala.com/${srcDest}`;
   return download(path, writeTo);
 }
 
@@ -44,9 +44,24 @@ function getImageList() {
 
 async function runner() {
   const data = await getImageList()
-  for (const img of data) {
-    console.log(img);
-    await getImage(img, dest)
+
+  // convert directory data into image list objects
+  let imageList = [];
+  const dataDir = Object.keys(data).sort();
+  for(let key of dataDir) {
+    console.log(key)
+    const dataDirList = data[key];
+    for(let image of dataDirList) {
+      imageList.push({
+        path: `${key}/images/${encodeURIComponent(image)}`,
+        name: image
+      });
+    }
+  }
+
+  for (const img of imageList) {
+    console.log(img.name);
+    await getImage(img.name, dest, img.path)
   }
 }
 

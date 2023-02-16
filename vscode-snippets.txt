@@ -44,6 +44,17 @@
 	}
 }
 
+{
+	"my-log": {
+		"scope": "javascript,typescript",
+		"prefix": "my-log",
+		"body": [
+			"console.log('%c $1', 'color:#fc03f0', $2);"
+		],
+		"description": "my color console.Log"
+	}
+}
+
 
 setting up ligature fonts:
 	brew tap homebrew/cask-fonts
