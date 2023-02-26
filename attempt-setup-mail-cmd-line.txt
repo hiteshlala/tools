@@ -1,0 +1,179 @@
+
+
+https://help.sonic.com/hc/en-us/articles/235251467-Apple-Mail
+
+https://budiirawan.com/install-mail-server-mac-osx/
+
+https://apple.stackexchange.com/questions/12387/how-to-send-an-email-from-command-line
+
+
+
+followed this with no luck:
+https://hints.macworld.com/article.php?story=20081217161612647
+whole article follows
+10.5: Send mail from Terminal using mail/sendmailUNIX
+Dec 22, '08 07:30:00AM • Contributed by: techiejohn
+I have some scripts that need to send mail from the command line. While mail works out of the box, it will not work if your ISP blocks port 25, or if your ISP's network address range is on a blacklist. You could use Mail.app and AppleScript, but that requires that the user in question be logged in, and may not work for scripts run by root.
+
+This solution configures postfix, the service used by mail and sendmail, to relay messages through a third-party server (ideally your ISP), optionally using authentication and TLS. You'll need to be root to create/edit the files and run the commands. So, without further delay, enjoy.
+
+Edit /etc/postfix/main.cf and add the following to the end:
+relayhost = smtp.yourisp.com # (you can use smtp.yourisp.com:port, such as smtp.yourisp.com:587)
+smtp_sasl_auth_enable = yes
+smtp_use_tls = yes
+smtp_enforce_tls = yes
+smtp_sasl_security_options =
+smtp_sasl_tls_security_options =
+smtp_sasl_tls_verified_security_options =
+smtp_tls_loglevel = 2 # optional if you wan to see what's going on with the TLS negotiation in /var/log/mail.log
+smtp_sasl_password_maps = hash:/etc/postfix/smtp_sasl_passwords
+smtp_tls_per_site = hash:/etc/postfix/smtp_tls_sites
+tls_random_source = dev:/dev/urandom
+Create /etc/postfix/smtp_sasl_passwords with the following contents:
+smtp.yourisp.com username:password
+Create /etc/postfix/smtp_tls_sites with the following contents:
+smtp.yourisp.com MUST_NOPEERMATCH
+Then run the following commands:
+$ cd /etc/postfix
+$ chmod go-rx smtp_sasl_passwords
+$ postmap smtp_sasl_passwords
+$ postmap smtp_tls_sites
+To test, try:
+echo "Hello" | mail -s "Test" you@domain.com
+The above test may not work if your provider requires a valid source e-mail address. If that's the case, try:
+printf "Subject: TestnHello" | sendmail -f you@domain.com you@domain.com
+This second test form specifies the "from" address as you, but can be changed to anything you want as long as it passes muster with your provider's server. You can now check the logs:
+tail /var/log/mail.log
+Or, if you're crafty, you'll open a second Terminal window, and before running the tests in the first window, do:
+tail -f /var/log/mail.log
+Here are some notes about options that you see in the content above:
+The *_security_options settings allow postfix to use plain text passwords during authentication (albeit over TLS).
+The MUST_NOPEERMATCH in the smtp_tls_sites file ignores certificate mismatches when negotiating TLS. This, overall, is not a good idea, but I didn't have time to play with it yet and configure the CA. Other options are NONE, MAY, and MUST, but some will require configuration of the CA so that a trust can be established with the server. This, I believe, is configured with smtp_tls_CAfile. When I get it working, I may post an update.
+The chmod go-rx smtp_sasl_passwords removes the group and other/world read/execute permissions on the password files. Only the root user should be able to read it.
+That is all. I pieced this information together from lots of useless searches and several useful how-to's and postings. I make no guarantees, but I hope it helps someone.
+    •    
+Currently 3.41 / 5
+  You rated: 1 / 5 (17 votes cast)  
+[121,066 views]  
+Hint Options
+Printable Hint Format
+Subscribe to 'macosxhints.com Unix tips and tricks'
+
+10.5: Send mail from Terminal using mail/sendmail | 8 comments | Create New Account
+
+Oldest First
+ 
+Nested
+ 
+Click here to return to the '10.5: Send mail from Terminal using mail/sendmail' hint
+The following comments are owned by whoever posted them. This site is not responsible for what they say.
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: ars on Dec 22, '08 03:44:50PM
+I tried this with two authenticated accounts I have and I got an error in both cases:status=deferred (host asmtp.myisp.com said: 454 5.7.3 Client does not have permission to Send As this sender. (in reply to end of DATA command))
+I tried both tests and both gave the above error, so I don't know what went wrong.
+
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: macintown on Dec 23, '08 03:17:36AM
+For Mac OS X Server you can just send mail using above mentioned commands without any extra configuration.
+
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: boysoprano on Dec 23, '08 09:38:23AM
+Thanks, this works great! Only problem is the sender field appear as "Machine Username <email@domain.com>", not "Full Name <email@domain.com>". Does anyone know how to change this? The only way I could find to customize the display name was to change my user account name in System Preferences :/
+
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: techiejohn on Jan 01, '09 06:46:09AM
+You can fix the sender using the following:
+printf "From: Sender Name <sender@domain.com>\nTo: recipient@domain.com\nSubject: Subject\n\nBody\n" | /usr/sbin/sendmail -F "Sender Name" -f "sender@domain.com" "recipient@domain.com"
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: Pedro Estarque on Dec 23, '08 09:13:20PM
+Or use SendEmail, a simple perl script that has all the options you can think of and won't mess with your default installation.
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: techiejohn on Jan 01, '09 06:53:44AM
+Here's the update for the SSL certificate verification:
+
+If you want the verification process to work, you'll need to provide valid certificate authority (CA) certificates to OpenSSL via postfix. For some reason, my computer did not have the default OpenSSL root CA certificates installed. So, I decided to import them from the system root CA keychain.
+
+Run the following:
+
+security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain > /System/Library/OpenSSL/certs/cert.pem
+Include the following in /etc/postfix/main.cf:
+
+smtp_tls_CAfile = /System/Library/OpenSSL/certs/cert.pem
+Now you can change the MUST_NOPEERMATCH to just MUST, and the certificate verification should succeed if the certificate was signed with one of the system-accepted root certificates.
+
+For those Terminally Challenged
+Authored by: gatorparrots on Jan 06, '09 07:08:32PM
+This hint may well be beyond the capabilities of many readers. For those with a desire to replicate the goal of this hint, it can be done with some free/inexpensive software:
+
+http://cutedgesystems.com/software/MailServeForLeopard/ MailServe (Leopard) [$15]
+http://cutedgesystems.com/software/MailServe/ MailServe (Tiger) [Free]
+http://cutedgesystems.com/software/PostfixEnabler/ Postfix Enabler (Tiger & Panther) [Free]
+
+Or you could splurge and get a copy of OS X Server and use Server Admin to enable your own mail server...
+10.5: Send mail from Terminal using mail/sendmail
+Authored by: anton on May 02, '11 03:01:18PM
+I found this hint very useful and wanted to illustrate its use based on the example of gmail as your outgoing SMTP server. Here is the content of my main.cf file:
+
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_use_tls = yes
+smtp_tls_CAfile = /System/Library/OpenSSL/certs/cert.pem
+
+
+As you can see I didn't use parameter, which appears to be not required for gmail.
+
+smtp_tls_per_site = hash:/etc/postfix/smtp_tls_sites
+
+The content of /etc/postfix/sasl_passwd file is
+
+[smtp.gmail.com]:587 your_email@gmail.com:your password
+
+after you create the file issue
+
+sudo chmod 400 /etc/postfix/sasl_passwd
+sudo postmap /etc/postfix/sasl_passwd
+
+Generate the certificate (this was copied from post above)
+
+sudo security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain > /System/Library/OpenSSL/certs/cert.pem
+
+Finally restart Postfix for good measure
+
+sudo Postfix stop
+sudo Postfix start
+
+Thats it. You can now send email though gmail.
+
+
+===============================================================================================================
+
+
+2023/02/20
+tried again with another resource success!
+
+https://apple.stackexchange.com/questions/444382/send-email-from-command-line-macos-monterey-12-3/444535#444535
+https://unix.stackexchange.com/questions/379175/how-do-i-change-postfix-sender-address
+https://hints.macworld.com/article.php?story=20081217161612647
+
+to print out the logs:
+  log stream --predicate  '(process == "smtpd") || (process == "smtp")' --info
+
+Additionally I don't think that its reading the generic.cf.db correctly - its still using the
+sonic.net domain :shrug:
+
+in /etc/postfix/main.cf:
+  relayhost = mail.sonic.net:465
+  smtp_sasl_password_maps = static:hiteshlala:narayan2sonic
+  smtp_sasl_auth_enable = yes
+  smtp_sasl_security_options = noanonymous
+  smtp_tls_security_level = encrypt
+  header_size_limit = 4096000
+  # For port 465
+  smtp_tls_wrappermode = yes
+  smtp_tls_security_level = encrypt
+  # have to run postmap generic.cf to generate the db
+  # For rewriting mymacusername@mymacname.home to myusername@myisp.com
+  smtp_generic_maps = hash:/etc/postfix/generic.cf
+  myorigin = sonic.net
+
