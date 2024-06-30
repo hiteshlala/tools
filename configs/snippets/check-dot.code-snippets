@@ -1,0 +1,7 @@
+{
+	"check-dot" : {
+		"prefix": "check-dot",
+		"body": [ "• "],
+		"description": "add check mark (•)"
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"check-x" : {
+		"prefix": "check-x",
+		"body": [ "✗ "],
+		"description": "add check mark (✘, ✗)"
+	}
+}
